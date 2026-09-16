@@ -797,6 +797,12 @@ check it.  The judgment is the point, not the tool-use:
 
 (a) `2 < 3 ∧ 3 < 4`   (b) `2 < 3 ∨ 3 < 2`   (c) `¬ (2 = 3)`   (d) `¬ (2 < 3 ∧ 3 < 2)`
 
+/-
+(a) Yes, because it compares finite Nat values, so the predicate is decidable.  It uses the product constructor (∧).
+(b) Yes, because it compares finite Nat values, so the predicate is decidable.  It uses the sum constructor (∨).
+(c) Yes, because it compares finite Nat values, so the predicate is decidable.  It uses the negation constructor (¬).
+(d) Yes, because it compares finite Nat values, so the predicate is decidable.  It uses the negation constructor (¬) and the product constructor (∧).
+-/
 ```lean
 #guard decide (2 < 3 ∧ 3 < 4) = true
 #guard decide (2 < 3 ∨ 3 < 2) = true
@@ -826,6 +832,17 @@ twice introduces `f : α → α` and `x : α`; the only way to reach the goal `�
 
 When `α` is a `Prop`, read `(P → P) → P → P` aloud: what does `twice` say logically?
 
+/-
+1. Goal: (α → α) → α → α
+2. →I: Assume f : α → α, Goal becomes α → α
+3. →I: Assume x : α, Goal becomes α
+4. →E: Apply f to x, Goal becomes α
+5. →E: Apply f to (f x) to get f (f x) : α
+
+If P implies P, and P is true, then P is true.
+-/
+
+def twice {a : Type} (f : a → a) (x : a) : a := f (f x)
 ---
 
 **[E0.3]** · *specification writing (+ type reading)* · tier 1 · **core** · target `mapOption`
@@ -841,6 +858,14 @@ then confirm on instances.  Which **two** of the six constructors does the *type
 #guard mapOption (fun b => !b) (some true) = some false
 ```
 
+/-
+Spec: some a ↦ some (f a), and none ↦ none
+Constructors: function (→) and sum (⊕)
+-/
+def mapOption {α β : Type} (f : α → β) (o : Option α) : Option β :=
+  match o with
+  | some a => some (f a)
+  | none   => none
 ---
 
 **[E0.4]** · *counterexample finding* · tier 1 · **core**
@@ -857,6 +882,8 @@ two sides differ):
 Then state, in one line, the *side condition* on `a` and `b` under which `(a - b) + b = a`
 does hold.
 
+#guard (3 - 10) + 10 ≠ 3
+--The formula holds only when a ≥ b.
 ---
 
 **[E0.5]** · *specification reading* · tier 3 (+ tier-1 check) · **stretch**
